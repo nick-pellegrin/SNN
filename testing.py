@@ -50,13 +50,13 @@ class Net(nn.Module):
 net = Net()
 
 output, mem_rec = net.forward(spk_in)
+output = output.squeeze(1)
 print(output.shape)
-print(spk_in.shape)
 
 fig = plt.figure(facecolor="w", figsize=(10, 5))
 ax = fig.add_subplot(111)
 #  s: size of scatter points; c: color of scatter points
-splt.raster(spk_in, ax, c="black")
+splt.raster(output, ax, s=100, c="black", marker='|', linewidths=2.5)
 plt.title("Output Layer")
 plt.xlabel("Time step")
 plt.ylabel("Neuron Number")
