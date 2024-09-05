@@ -50,7 +50,7 @@ test_loader = DataLoader(mnist_test, batch_size=batch_size, shuffle=True, drop_l
 
 
 # NEURON PARAMETERS ----------------------------------------------------------------------------------
-beta = 0.85
+beta = 0.5
 spike_grad = surrogate.fast_sigmoid(slope=25)
 
 
