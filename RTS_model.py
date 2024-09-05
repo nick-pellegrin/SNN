@@ -60,6 +60,12 @@ spike_grad = surrogate.fast_sigmoid(slope=25)
 # num_outputs = 10
 
 
+
+# TRAINING PARAMETERS --------------------------------------------------------------------------------
+num_steps = 50
+
+
+
 # NETWORK DEFINITION ---------------------------------------------------------------------------------
 class Net(nn.Module):
     def __init__(self):
@@ -121,7 +127,7 @@ class Net(nn.Module):
 def forward_pass(net, num_steps, data):
     mem_rec = []
     spk_rec = []
-    utils.reset_net(net)
+    utils.reset(net)
 
     for step in range(num_steps):
         spk_out, mem_out = net(data)
@@ -149,7 +155,7 @@ def batch_accuracy(train_loader, net, num_steps):
     return acc/total
 
 
-def train(net, train_loader, num_steps, optimizer):
+def train(net, train_loader, test_loader, num_steps):
     optimizer = torch.optim.Adam(net.parameters(), lr=1e-2, betas=(0.9, 0.999))
     loss_fn = SF.ce_rate_loss()
     num_epochs = 1
@@ -196,7 +202,7 @@ def train(net, train_loader, num_steps, optimizer):
 # MAIN ------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     net = Net()
-    
+    train(net, train_loader, test_loader, num_steps)
 
 
     # output = net.simulate(200)
