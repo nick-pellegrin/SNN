@@ -58,6 +58,7 @@ spike_grad = surrogate.fast_sigmoid(slope=25)
 # num_inputs = 784
 # num_hidden = 1000
 # num_outputs = 10
+pop_outputs = 500
 
 
 
@@ -76,7 +77,7 @@ class Net(nn.Module):
         self.lif1 = snn.Leaky(beta=beta, spike_grad=spike_grad)
         self.conv2 = nn.Conv2d(12, 64, kernel_size=5, stride=1)
         self.lif2 = snn.Leaky(beta=beta, spike_grad=spike_grad)
-        self.fc1 = nn.Linear(64*4*4, 10)
+        self.fc1 = nn.Linear(64*4*4, pop_outputs)
         self.lif3 = snn.Leaky(beta=beta, spike_grad=spike_grad)
 
 
@@ -147,9 +148,10 @@ def batch_accuracy(train_loader, net, num_steps):
         for data, targets in train_loader:
             data = data.to(device)
             targets = targets.to(device)
+            utils.reset(net)
             spk_rec, _ = forward_pass(net, num_steps, data)
 
-            acc += SF.accuracy_rate(spk_rec, targets) * spk_rec.size(1)
+            acc += SF.accuracy_rate(spk_rec, targets, population_code=True, num_classes=10) * spk_rec.size(1)
             total += spk_rec.size(1)
 
     return acc/total
@@ -157,7 +159,7 @@ def batch_accuracy(train_loader, net, num_steps):
 
 def train(net, train_loader, test_loader, num_steps):
     optimizer = torch.optim.Adam(net.parameters(), lr=1e-2, betas=(0.9, 0.999))
-    loss_fn = SF.ce_rate_loss()
+    loss_fn = SF.mse_count_loss(correct_rate=1.0, incorrect_rate=0.0, population_code=True, num_classes=10)
     num_epochs = 1
     loss_hist = []
     test_acc_hist = []
